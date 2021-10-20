@@ -36,10 +36,19 @@ def main():
     with open(input_path) as input_file:
         lines = input_file.readlines()
         output_lines = []
+        meet_test_one = False
+        meet_bracket = False
         for line in lines:
             if 'int LLVMFuzzerTestOneInput' in line and not line.strip().startswith('/'):
                 output_lines.append(main_func_handle)
+                meet_test_one = True
+                if '{' in line:
+                    meet_bracket = True
             else:
+                if meet_test_one and not meet_bracket:
+                    if '{' in line:
+                        meet_bracket = True
+                    continue
                 output_lines.append(line)
         with open(output_path, 'w') as output_file:
             for line in output_lines:
